@@ -1,9 +1,14 @@
 const express = require('express')
 const app = express()
+const dotenv = require("dotenv")
+// 加载环境变量(应尽早执行以保证环境变量可用)
+dotenv.config()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const { expressjwt: jwt } = require('express-jwt')
 const { jwtSecretKey } = require('./config/jwtSecretKey')
+const DB = require('./config/sequelize')
+
 
 // 跨域
 app.use(cors())
@@ -19,12 +24,14 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
   path: [
     /^\/api\/user\/v1\/register/, // 注册
     /^\/api\/user\/v1\/login/, // 登录
+    '/test', 
   ]
 }))
 
 
-app.get('/test', (req, res) => {
-  res.send('请求成功')
+app.get('/test', async (req, res) => {
+  const resData = await DB.Account.findAll()
+  res.send({ code: 200, data: resData, msg: '请求成功' })
 })
 
 

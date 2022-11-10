@@ -1,1 +1,4 @@
 node_modules
+.env
+# 自动生成的sequelize模型文件
+models

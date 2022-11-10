@@ -5,12 +5,19 @@
   "repository": "https://github.com/wzc520pyfm/shopping-backend.git",
   "author": "wzc520pyfm <1528857653@qq.com>",
   "license": "MIT",
+  "scripts": {
+    "models": "node_modules\\.bin\\sequelize-auto"
+  },
   "dependencies": {
     "blueimp-md5": "2.19.0",
     "body-parser": "1.20.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-jwt": "7.7.5",
-    "jsonwebtoken": "8.5.1"
+    "jsonwebtoken": "8.5.1",
+    "mysql2": "2.3.3",
+    "sequelize": "6.24.0",
+    "sequelize-auto": "0.8.8"
   }
 }
