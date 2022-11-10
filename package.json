@@ -1,0 +1,13 @@
+{
+  "name": "shopping-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/wzc520pyfm/shopping-backend.git",
+  "author": "wzc520pyfm <1528857653@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "1.20.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
