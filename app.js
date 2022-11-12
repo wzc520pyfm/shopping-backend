@@ -24,11 +24,15 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
   path: [
     /^\/api\/user\/v1\/register/, // 注册
     /^\/api\/user\/v1\/login/, // 登录
-    '/test', 
+    /^\/api\/notify\/v1/, // 图形验证码接口
   ]
 }))
 
+// 通过相关的接口
+const notifyRouter = require('./router/notify.js')
+app.use('/api/notify/v1', notifyRouter)
 
+// 测试数据库操作的接口示例
 app.get('/test', async (req, res) => {
   const resData = await DB.Account.findAll()
   res.send({ code: 200, data: resData, msg: '请求成功' })
