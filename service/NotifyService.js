@@ -1,6 +1,7 @@
 const svgCaptcha = require('svg-captcha')
 const redisConfig = require('../config/redisConfig')
 const aliyunMessage = require('../config/aliyunMessage')
+const dayjs = require('dayjs')
 
 const NotifyService = {
   /**
@@ -20,9 +21,17 @@ const NotifyService = {
     return captcha.data // 返回完整的验证码信息
   },
   sendCode: async (phone, captcha, type, key, randomCode) => {
-    // 60秒内不能重复获取
-    if (await redisConfig.exists(`${type}:over:` + phone)) {
-      return { code: -1, msg: '60秒内不能重复获取' }
+    // *****************************方案1***********************
+    // // 60秒内不能重复获取
+    // if (await redisConfig.exists(`${type}:over:` + phone)) {
+    //   return { code: -1, msg: '60秒内不能重复获取' }
+    // }
+    // *****************************方案2***********************
+    if (await redisConfig.exists(`${type}:code:` + phone)) {
+      let dateRedis = dayjs(Number((await redisConfig.get(`${type}:code:` + phone)).split('_')[0]))
+      if (dayjs(Date.now()).diff(dateRedis, 'second') <= 60) { // 距离短信发送未超过60秒不可重复发送
+        return { code: -1, msg: '60秒内不能重复获取' }
+      }
     }
 
     // 是否有图形验证码
@@ -39,11 +48,15 @@ const NotifyService = {
     // 发送手机验证码
     let codeRes = (await aliyunMessage(phone, randomCode)).data
 
-    // 验证码存入redis
-    redisConfig.set(`${type}:code:` + phone, randomCode, 600)
-
-    // 存60秒判断的key
-    redisConfig.set(`${type}:over:` + phone, '1', 60)
+    // *****************************方案1***********************
+    // // 验证码存入redis
+    // redisConfig.set(`${type}:code:` + phone, randomCode, 600)
+    // // 存60秒判断的key
+    // redisConfig.set(`${type}:over:` + phone, '1', 60)
+    // ****************************方案2************************
+    // 利用当前时间拼接验证码
+    let randomCodeTime = `${Date.now()}_${randomCode}`
+    redisConfig.set(`${type}:code:` + phone, randomCodeTime, 600)
 
     // 删除图形验证码
     redisConfig.del(`${type}:captcha:` + key)
