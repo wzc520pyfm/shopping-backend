@@ -10,7 +10,7 @@ const UserService = {
     // 手机号注册查重
     let existPhone = await DB.Account.findAll({ where: { phone } })
     if (existPhone.length > 0) {
-      return BackCode.buildError({ msg: '手机号已经注册' })
+      return BackCode.buildResult(CodeEnum.ACCOUNT_REPEAT)
     }
 
     // 获取redis中的验证码和用户传入的验证码进行对比

@@ -7,7 +7,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { expressjwt: jwt } = require('express-jwt')
 const { jwtSecretKey } = require('./config/jwtSecretKey')
-const DB = require('./config/sequelize')
 
 
 // 跨域

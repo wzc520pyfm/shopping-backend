@@ -16,7 +16,10 @@ const NotifyService = {
       size: 4, // 验证码长度
       ignoreChars: '0o1i', // 验证码字符中排除 0o1i
       noise: 1, //干扰线
-      background: '#aaa' // 背景颜色
+      background: '#bbb', // 背景颜色
+      color: '#fff',
+      height: 60,
+      fontSize: 75
     })
     redisConfig.set(`${type}:captcha:` + key, captcha.text, 600) // 将生成的验证码存入redis, 过期时间为10分钟
 
@@ -40,10 +43,13 @@ const NotifyService = {
     if (!(await redisConfig.exists(`${type}:captcha:` + key))) {
       return BackCode.buildResult(CodeEnum.CODE_SEND)
     }
+    if (!captcha) {
+      return BackCode.buildError({ msg: '缺少captcha参数' })
+    }
 
     // 对比用户的图形验证码和redis储存的是否一致
     let captchaRedis = await redisConfig.get(`${type}:captcha:` + key)
-    if (!(captcha.toLowerCase() === captchaRedis.toLowerCase())) {
+    if (!(String(captcha).toLowerCase() === captchaRedis.toLowerCase())) {
       return BackCode.buildResult(CodeEnum.CODE_ERROR)
     }
 
