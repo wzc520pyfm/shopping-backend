@@ -2,6 +2,8 @@ const svgCaptcha = require('svg-captcha')
 const redisConfig = require('../config/redisConfig')
 const aliyunMessage = require('../config/aliyunMessage')
 const dayjs = require('dayjs')
+const BackCode = require('../utils/BackCode')
+const CodeEnum = require('../utils/CodeEnum')
 
 const NotifyService = {
   /**
@@ -24,25 +26,25 @@ const NotifyService = {
     // *****************************方案1***********************
     // // 60秒内不能重复获取
     // if (await redisConfig.exists(`${type}:over:` + phone)) {
-    //   return { code: -1, msg: '60秒内不能重复获取' }
+    //   return BackCode.buildResult(CodeEnum.CODE_LIMITED)
     // }
     // *****************************方案2***********************
     if (await redisConfig.exists(`${type}:code:` + phone)) {
       let dateRedis = dayjs(Number((await redisConfig.get(`${type}:code:` + phone)).split('_')[0]))
       if (dayjs(Date.now()).diff(dateRedis, 'second') <= 60) { // 距离短信发送未超过60秒不可重复发送
-        return { code: -1, msg: '60秒内不能重复获取' }
+        return BackCode.buildResult(CodeEnum.CODE_LIMITED)
       }
     }
 
     // 是否有图形验证码
     if (!(await redisConfig.exists(`${type}:captcha:` + key))) {
-      return { code: -1, msg: '请发送图形验证码' }
+      return BackCode.buildResult(CodeEnum.CODE_SEND)
     }
 
     // 对比用户的图形验证码和redis储存的是否一致
     let captchaRedis = await redisConfig.get(`${type}:captcha:` + key)
     if (!(captcha.toLowerCase() === captchaRedis.toLowerCase())) {
-      return { code: -1, msg: '图形验证码错误' }
+      return BackCode.buildResult(CodeEnum.CODE_ERROR)
     }
 
     // 发送手机验证码
@@ -63,9 +65,9 @@ const NotifyService = {
     redisConfig.del(`${type}:captcha:` + key)
 
     if (codeRes.code == '200') { // 返回值200代表发送成功, 可在短信云服务商处自定义返回值
-      return { code: 0, msg: '发送成功' }
+      return BackCode.buildSuccessAndMsg({ msg: '发送成功' })
     } else {
-      return { code: -1, msg: '发送失败' }
+      return BackCode.buildError({ msg: '发送失败' })
     }
   }
 }

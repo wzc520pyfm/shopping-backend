@@ -11,12 +11,17 @@ class BackCode {
   }
 
   // 请求成功, 只返回code+data内容
-  static buildSuccessAndData(data) {
+  static buildSuccessAndData({ data }) {
     return new BackCode({ code: 0, data: data, msg: null }).toJson()
   }
 
+  // 请求成功, 只返回code+msg内容
+  static buildSuccessAndMsg({ msg }) {
+    return new BackCode({ code: 0, data: null, msg }).toJson()
+  }
+
   // 请求失败, 只返回code+msg内容
-  static buildError(msg) {
+  static buildError({ msg }) {
     return new BackCode({ code: -1, data: null, msg: msg }).toJson()
   }
 
