@@ -17,6 +17,16 @@ const redisConfig = {
   get: (key) => {
     return redis.get(key)
   },
+
+  // redis删除数据
+  del: (key) => {
+    redis.del(key)
+  },
+
+  // redis判断数据是否存在
+  exists: (key) => {
+    return redis.exists(key)
+  }
 }
 
 module.exports = redisConfig

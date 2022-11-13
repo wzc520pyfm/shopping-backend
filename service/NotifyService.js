@@ -1,5 +1,6 @@
 const svgCaptcha = require('svg-captcha')
 const redisConfig = require('../config/redisConfig')
+const aliyunMessage = require('../config/aliyunMessage')
 
 const NotifyService = {
   /**
@@ -7,7 +8,7 @@ const NotifyService = {
    * @param {enum['register', 'login']} type 验证码类别
    * @returns 
    */
-  captcha: async (key, type) => {
+  captcha: (key, type) => {
     let captcha = svgCaptcha.create({
       size: 4, // 验证码长度
       ignoreChars: '0o1i', // 验证码字符中排除 0o1i
@@ -17,6 +18,41 @@ const NotifyService = {
     redisConfig.set(`${type}:captcha:` + key, captcha.text, 600) // 将生成的验证码存入redis, 过期时间为10分钟
 
     return captcha.data // 返回完整的验证码信息
+  },
+  sendCode: async (phone, captcha, type, key, randomCode) => {
+    // 60秒内不能重复获取
+    if (await redisConfig.exists(`${type}:over:` + phone)) {
+      return { code: -1, msg: '60秒内不能重复获取' }
+    }
+
+    // 是否有图形验证码
+    if (!(await redisConfig.exists(`${type}:captcha:` + key))) {
+      return { code: -1, msg: '请发送图形验证码' }
+    }
+
+    // 对比用户的图形验证码和redis储存的是否一致
+    let captchaRedis = await redisConfig.get(`${type}:captcha:` + key)
+    if (!(captcha.toLowerCase() === captchaRedis.toLowerCase())) {
+      return { code: -1, msg: '图形验证码错误' }
+    }
+
+    // 发送手机验证码
+    let codeRes = (await aliyunMessage(phone, randomCode)).data
+
+    // 验证码存入redis
+    redisConfig.set(`${type}:code:` + phone, randomCode, 600)
+
+    // 存60秒判断的key
+    redisConfig.set(`${type}:over:` + phone, '1', 60)
+
+    // 删除图形验证码
+    redisConfig.del(`${type}:captcha:` + key)
+
+    if (codeRes.code == '200') { // 返回值200代表发送成功, 可在短信云服务商处自定义返回值
+      return { code: 0, msg: '发送成功' }
+    } else {
+      return { code: -1, msg: '发送失败' }
+    }
   }
 }
 
