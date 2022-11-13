@@ -49,6 +49,7 @@ const NotifyService = {
     let codeRes = (await aliyunMessage(phone, randomCode)).data
 
     // *****************************方案1***********************
+    // ! 需考虑: 1.两个redis操作须保证操作原子性. 2.占用了两个空间, 能否只占用一个?
     // // 验证码存入redis
     // redisConfig.set(`${type}:code:` + phone, randomCode, 600)
     // // 存60秒判断的key

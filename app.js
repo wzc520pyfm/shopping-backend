@@ -28,15 +28,12 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
   ]
 }))
 
-// 通过相关的接口
+// 通知相关的接口
 const notifyRouter = require('./router/notify.js')
 app.use('/api/notify/v1', notifyRouter)
-
-// 测试数据库操作的接口示例
-app.get('/test', async (req, res) => {
-  const resData = await DB.Account.findAll()
-  res.send({ code: 200, data: resData, msg: '请求成功' })
-})
+// 用户相关的接口
+const userRouter = require('./router/user.js')
+app.use('/api/user/v1', userRouter)
 
 
 
