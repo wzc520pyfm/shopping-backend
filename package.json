@@ -22,6 +22,7 @@
     "mysql2": "2.3.3",
     "sequelize": "6.24.0",
     "sequelize-auto": "0.8.8",
+    "sha1": "1.1.1",
     "svg-captcha": "1.4.0"
   }
 }

@@ -24,6 +24,7 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
     /^\/api\/user\/v1\/register/, // 注册
     /^\/api\/user\/v1\/login/, // 登录
     /^\/api\/notify\/v1/, // 图形验证码接口
+    /^\/api\/wx_login\/v1/, // 图形验证码接口
   ]
 }))
 
@@ -33,6 +34,9 @@ app.use('/api/notify/v1', notifyRouter)
 // 用户相关的接口
 const userRouter = require('./router/user.js')
 app.use('/api/user/v1', userRouter)
+// 微信登录相关的接口
+const wxLoginRouter = require('./router/wxLogin.js')
+app.use('/api/wx_login/v1', wxLoginRouter)
 
 
 
