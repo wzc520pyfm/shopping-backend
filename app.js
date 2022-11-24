@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
   path: [
     /^\/api\/user\/v1\/register/, // 注册
+    /^\/api\/user\/v1\/forget/, // 设置密码
     /^\/api\/user\/v1\/login/, // 登录
     /^\/api\/notify\/v1/, // 图形验证码接口
     /^\/api\/wx_login\/v1/, // 图形验证码接口
