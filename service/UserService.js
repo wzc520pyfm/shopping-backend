@@ -50,15 +50,26 @@ const UserService = {
     return BackCode.buildSuccessAndMsg({ msg: '修改成功' })
   },
   login: async (req) => {
-    let { phone, password } = req.body
+    let { phone, password, code } = req.body
     // 参数判空
-    if (!(phone && password)) return BackCode.buildError({ msg: '缺少必要参数' })
+    if (!(phone && (password || code))) return BackCode.buildError({ msg: '缺少必要参数' })
     // 判断手机号是否注册
     let userInfo = await DB.Account.findAll({ where: { phone }, raw: true })
     if (userInfo.length === 0) return BackCode.buildResult(CodeEnum.ACCOUNT_UNREGISTER)
-    // 判断密码是否正确
-    if (!(userInfo[0].pwd === SecretTool.md5(password))) {
-      return BackCode.buildResult(CodeEnum.ACCOUNT_PWD_ERROR)
+
+    // 帐密方式登录
+    if (password) {
+      // 判断密码是否正确
+      if (!(userInfo[0].pwd === SecretTool.md5(password))) {
+        return BackCode.buildResult(CodeEnum.ACCOUNT_PWD_ERROR)
+      }
+    } else { // 手机验证码方式登录
+      // 判断redis中是否有login的code
+      let codeExist = await redisConfig.exists('login:code:' + phone)
+      if (!codeExist) return BackCode.buildError({ msg: '请先获取手机验证码' })
+      // redis中的code和用户传的code对比
+      let codeRes = (await redisConfig.get('login:code:' + phone)).split('_')[1]
+      if (!(codeRes == code)) return BackCode.buildError({ msg: '手机验证码不正确' })
     }
     // 拼接token, 将必要的用户信息加入token, 注意除去密码
     const { pwd, ...user } = userInfo[0]
