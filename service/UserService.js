@@ -48,6 +48,23 @@ const UserService = {
     pwd = SecretTool.md5(password)
     await DB.Account.update({ pwd }, { where: { phone } })
     return BackCode.buildSuccessAndMsg({ msg: '修改成功' })
+  },
+  login: async (req) => {
+    let { phone, password } = req.body
+    // 参数判空
+    if (!(phone && password)) return BackCode.buildError({ msg: '缺少必要参数' })
+    // 判断手机号是否注册
+    let userInfo = await DB.Account.findAll({ where: { phone }, raw: true })
+    if (userInfo.length === 0) return BackCode.buildResult(CodeEnum.ACCOUNT_UNREGISTER)
+    // 判断密码是否正确
+    if (!(userInfo[0].pwd === SecretTool.md5(password))) {
+      return BackCode.buildResult(CodeEnum.ACCOUNT_PWD_ERROR)
+    }
+    // 拼接token, 将必要的用户信息加入token, 注意除去密码
+    const { pwd, ...user } = userInfo[0]
+    // 生成token
+    let token = SecretTool.jwtSign(user, '168h')
+    return BackCode.buildSuccessAndData({ data: `Bearer ${token}` })
   }
 }
 
