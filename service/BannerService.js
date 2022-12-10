@@ -3,7 +3,7 @@ const BackCode = require('../utils/BackCode')
 
 const BannerService = {
   list: async (location) => {
-    const data = await DB.Banner.findAll({ where: { location } })
+    const data = await DB.Banner.findOne({ where: { location } })
     return BackCode.buildSuccessAndData({ data })
   }
 }

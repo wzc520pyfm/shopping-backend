@@ -76,6 +76,12 @@ const UserService = {
     // 生成token
     let token = SecretTool.jwtSign(user, '168h')
     return BackCode.buildSuccessAndData({ data: `Bearer ${token}` })
+  },
+  detail: async (req) => {
+    let token = req.headers.authorization.split(' ').pop()
+    let userInfo = SecretTool.jwtVerify(token)
+    let userDetail = await DB.Account.findOne({ where: { id: userInfo.id }, raw: true })
+    return BackCode.buildSuccessAndData({ data: { ...userDetail, pwd: '' } })
   }
 }
 

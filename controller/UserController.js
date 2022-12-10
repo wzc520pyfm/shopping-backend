@@ -2,6 +2,7 @@
  * @params register 注册接口
  * @params forget 设置密码接口
  * @params login 登录接口
+ * @params detail 用户信息接口
  */
 
 const UserService = require('../service/UserService.js')
@@ -18,6 +19,10 @@ const UserController = {
   },
   login: async (req, res) => {
     let handleRes = await UserService.login(req)
+    res.send(handleRes)
+  },
+  detail: async (req, res) => {
+    let handleRes = await UserService.detail(req)
     res.send(handleRes)
   }
 }
