@@ -27,6 +27,7 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
     /^\/api\/notify\/v1/, // 图形验证码接口
     /^\/api\/wx_login\/v1/, // 图形验证码接口
     /^\/api\/banner\/v1/, // banner接口
+    /^\/api\/product\/v1/, // banner接口
   ]
 }))
 
@@ -42,6 +43,9 @@ app.use('/api/wx_login/v1', wxLoginRouter)
 // banner接口
 const bannerRouter = require('./router/banner.js')
 app.use('/api/banner/v1', bannerRouter)
+// 视频课程接口
+const productRouter = require('./router/product.js')
+app.use('/api/product/v1', productRouter)
 
 
 
