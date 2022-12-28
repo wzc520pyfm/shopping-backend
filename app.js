@@ -45,6 +45,8 @@ const bannerRouter = require('./router/banner.js')
 app.use('/api/banner/v1', bannerRouter)
 // 视频课程接口
 const productRouter = require('./router/product.js')
+const BackCode = require('./utils/BackCode')
+const CodeEnum = require('./utils/CodeEnum')
 app.use('/api/product/v1', productRouter)
 
 
@@ -53,10 +55,10 @@ app.use('/api/product/v1', productRouter)
 app.use((err, req, res, next) => {
   // 未登录
   if (err.name === 'UnauthorizedError') {
-    return res.send({ code: -1, data: null, msg: '请登录!' })
+    return res.send(BackCode.buildResult(CodeEnum.ACCOUNT_UNLOGIN))
   }
   // 其他错误
-  res.send({ code: -1, data: null, msg: err.message })
+  res.send(BackCode.buildError({ msg: err.message }))
 })
 
 
