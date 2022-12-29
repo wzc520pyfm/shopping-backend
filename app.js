@@ -7,6 +7,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const { expressjwt: jwt } = require('express-jwt')
 const { jwtSecretKey } = require('./config/jwtSecretKey')
+const BackCode = require('./utils/BackCode')
+const CodeEnum = require('./utils/CodeEnum')
 
 
 // 跨域
@@ -26,28 +28,35 @@ app.use(jwt({ secret: jwtSecretKey, algorithms: ['HS256'] }).unless({
     /^\/api\/user\/v1\/login/, // 登录
     /^\/api\/notify\/v1/, // 图形验证码接口
     /^\/api\/wx_login\/v1/, // 图形验证码接口
-    /^\/api\/banner\/v1/, // banner接口
-    /^\/api\/product\/v1/, // banner接口
+    /^\/api\/banner\/v1/, // 轮播图接口
+    /^\/api\/product\/v1/, // 课程视频接口
+    /^\/api\/teacher\/v1/, // 讲师接口
   ]
 }))
 
 // 通知相关的接口
 const notifyRouter = require('./router/notify.js')
 app.use('/api/notify/v1', notifyRouter)
+
 // 用户相关的接口
 const userRouter = require('./router/user.js')
 app.use('/api/user/v1', userRouter)
+
 // 微信登录相关的接口
 const wxLoginRouter = require('./router/wxLogin.js')
 app.use('/api/wx_login/v1', wxLoginRouter)
+
 // banner接口
 const bannerRouter = require('./router/banner.js')
 app.use('/api/banner/v1', bannerRouter)
+
 // 视频课程接口
 const productRouter = require('./router/product.js')
-const BackCode = require('./utils/BackCode')
-const CodeEnum = require('./utils/CodeEnum')
 app.use('/api/product/v1', productRouter)
+
+// 视频课程接口
+const teacherRouter = require('./router/teacher.js')
+app.use('/api/teacher/v1', teacherRouter)
 
 
 

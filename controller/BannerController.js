@@ -1,5 +1,6 @@
 /**
  * @params list banner接口
+ *  - 依据不同的location获取不同的轮播图
  */
 
 const BannerService = require('../service/BannerService.js')
