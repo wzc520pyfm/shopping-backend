@@ -14,6 +14,10 @@ const ProductController = {
     let handleRes = await ProductService.card()
     res.send(handleRes)
   },
+  query_by_cid: async (req, res) => {
+    let handleRes = await ProductService.query_by_cid(req)
+    res.send(handleRes)
+  }
 }
 
 module.exports = ProductController
